@@ -37,23 +37,24 @@ pipeline {
                 '''
             }
         }
-stage('Deploy') {
-    steps {
-        sh '''
-        echo "Stopping old containers..."
 
-        docker compose -f ${COMPOSE_FILE} down --remove-orphans || true
+        stage('Deploy') {
+            steps {
+                sh '''
+                echo "Stopping old containers..."
 
-        echo "Removing old containers..."
+                docker compose -f ${COMPOSE_FILE} down --remove-orphans || true
 
-        docker rm -f springboot-container mysql-container || true
+                echo "Removing old containers..."
 
-        echo "Building and starting containers..."
+                docker rm -f springboot-container mysql-container || true
 
-        docker compose -f ${COMPOSE_FILE} up -d --build
-        '''
-    }
-}
+                echo "Building and starting containers..."
+
+                docker compose -f ${COMPOSE_FILE} up -d --build
+                '''
+            }
+        }
 
         stage('Wait for Application') {
             steps {
@@ -75,7 +76,6 @@ stage('Deploy') {
                 '''
             }
         }
-
     }
 
     post {
@@ -83,14 +83,17 @@ stage('Deploy') {
         success {
             echo "Deployment successful"
         }
-failure {
-    echo "Deployment failed"
 
-    sh '''
-    docker ps -a || true
-    docker compose -f ${COMPOSE_FILE} logs || true
-    '''
-}
+        failure {
+            echo "Deployment failed"
+
+            sh '''
+            echo "Running containers:"
+            docker ps -a || true
+
+            echo "Docker Compose logs:"
+            docker compose -f ${COMPOSE_FILE} logs || true
+            '''
         }
 
         always {
