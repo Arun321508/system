@@ -18,7 +18,7 @@ pipeline {
                 cleanWs()
 
                 git branch: 'main',
-                    url: 'https://github.com/DeepikaCAshok/Employee-Management-Portal.git'
+                    url: 'https://github.com/Arun321508/system.git'
             }
         }
 
